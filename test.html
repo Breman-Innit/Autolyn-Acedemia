@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teacher Onboarding · Autolyn Academia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy: #0B3766;
+    --navy-700: #0A2F58;
+    --navy-900: #082848;
+    --navy-tint: #EDF2F8;
+    --navy-tint-2: #DEE7F1;
+    --ink: #1B222B;
+    --ink-soft: #5B6472;
+    --ink-faint: #8A93A1;
+    --paper: #FFFFFF;
+    --paper-soft: #F7F9FB;
+    --border: #E2E6EC;
+    --border-strong: #CBD2DC;
+    --success: #1E8A5F;
+    --success-tint: #E7F5EE;
+    --danger: #C0392B;
+    --danger-tint: #FBEAE8;
+    --focus: #3D6FA6;
+    --radius-s: 8px;
+    --radius-m: 12px;
+    --radius-l: 20px;
+    --shadow-panel: 0 1px 2px rgba(11,55,102,0.06);
+    color-scheme: light;
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--paper-soft);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+  h1,h2,h3, .brand-word, .stepper-label{
+    font-family: 'Manrope', 'Inter', sans-serif;
+  }
+  button{ font-family: inherit; }
+
+  a{ color: var(--navy); }
+
+  .app{
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ---------- Splash / loading screen ---------- */
+  .splash{
+    position: fixed; inset: 0; z-index: 100;
+    background: linear-gradient(175deg, var(--navy) 0%, var(--navy-900) 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap: 22px;
+    transition: opacity .5s ease, visibility .5s ease;
+  }
+  .splash.hide{ opacity: 0; visibility: hidden; pointer-events: none; }
+  .splash-mark{
+    position: relative;
+    width: 76px; height: 76px;
+    display:flex; align-items:center; justify-content:center;
+    animation: splashPop .7s cubic-bezier(.2,.9,.25,1.1) both;
+  }
+  .splash-mark img{ width: 46px; height:auto; position:relative; z-index:1; }
+  .splash-ring{
+    position:absolute; inset:0;
+    border-radius: 50%;
+    border: 1.5px solid rgba(234,241,249,0.28);
+    border-top-color: #fff;
+    animation: splashSpin 1.1s linear infinite;
+  }
+  .splash-word{
+    font-family: 'Manrope', sans-serif;
+    font-size: 17px; font-weight: 700; color:#fff;
+    letter-spacing: -0.01em;
+    opacity: 0;
+    animation: splashFadeUp .6s ease .15s both;
+  }
+  .splash-word span{ font-weight: 500; color: #AFC5DE; }
+  .splash-bar{
+    width: 150px; height: 3px; border-radius: 3px;
+    background: rgba(234,241,249,0.18);
+    overflow: hidden;
+    opacity: 0;
+    animation: splashFadeUp .6s ease .25s both;
+  }
+  .splash-bar i{
+    display:block; height:100%; width: 0%;
+    background: #fff;
+    border-radius: 3px;
+    transition: width 1s cubic-bezier(.4,0,.2,1);
+  }
+  .splash-status{
+    font-size: 12.5px; color: #93AAC7;
+    opacity: 0;
+    animation: splashFadeUp .6s ease .32s both;
+  }
+  @keyframes splashPop{
+    0%{ transform: scale(.72); opacity:0; }
+    100%{ transform: scale(1); opacity:1; }
+  }
+  @keyframes splashFadeUp{
+    0%{ transform: translateY(6px); opacity:0; }
+    100%{ transform: translateY(0); opacity:1; }
+  }
+  @keyframes splashSpin{
+    to{ transform: rotate(360deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .splash-mark, .splash-word, .splash-bar, .splash-status{ animation: none; opacity:1; }
+    .splash-ring{ animation: none; }
+  }
+
+  /* ---------- Left rail ---------- */
+  .rail{
+    background: linear-gradient(175deg, var(--navy) 0%, var(--navy-900) 100%);
+    color: #EAF1F9;
+    padding: 40px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(234,241,249,0.3) transparent;
+  }
+  .rail::-webkit-scrollbar{ width: 6px; }
+  .rail::-webkit-scrollbar-track{ background: transparent; }
+  .rail::-webkit-scrollbar-thumb{ background: rgba(234,241,249,0.25); border-radius: 3px; }
+  .rail > .rail-foot{ flex: none; padding-top: 24px; }
+  .rail-bg{
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .rail-mark{
+    position: absolute;
+    right: -54px; bottom: -60px;
+    width: 320px; height: 320px;
+    opacity: 0.05;
+    transform: rotate(-8deg);
+  }
+  .rail-mark img{ width:100%; height:auto; display:block; }
+  .rail-top{ display:flex; flex-direction:column; gap: 34px; position: relative; z-index: 1; }
+  .brand{ display:flex; align-items:center; gap: 12px; }
+  .brand img{ width: 30px; height: auto; display:block; }
+  .brand-word{ font-size: 19px; font-weight: 700; letter-spacing: -0.01em; color:#fff; }
+  .brand-sub{ font-size: 12.5px; color: #AFC5DE; margin-top: 2px; letter-spacing: 0.01em; }
+  .brand-text{ display:flex; flex-direction:column; }
+
+  .hero-head{
+    font-size: 23px;
+    line-height: 1.22;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.015em;
+    margin: 0 0 10px;
+  }
+  .hero-copy{
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: #B7C9E0;
+    margin: 0;
+    max-width: 30ch;
+  }
+
+  .stepper{ display:flex; flex-direction:column; }
+  .step{
+    display:flex; gap: 14px;
+    padding-bottom: 22px;
+    position: relative;
+  }
+  .step:last-child{ padding-bottom:0; }
+  .step-line{
+    position:absolute;
+    left: 13px; top: 28px; bottom: 0;
+    width: 1.5px;
+    background: rgba(234,241,249,0.18);
+  }
+  .step:last-child .step-line{ display:none; }
+  .step.done .step-line{ background: rgba(234,241,249,0.4); }
+  .step-marker{
+    flex: none;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12.5px; font-weight: 700;
+    border: 1.5px solid rgba(234,241,249,0.35);
+    color: #C7D7EA;
+    background: transparent;
+    z-index: 1;
+  }
+  .step.current .step-marker{
+    background: #fff;
+    border-color: #fff;
+    color: var(--navy-900);
+  }
+  .step.done .step-marker{
+    background: rgba(234,241,249,0.16);
+    border-color: rgba(234,241,249,0.55);
+    color: #fff;
+  }
+  .step-body{ padding-top: 3px; }
+  .step-label{
+    font-size: 14.5px; font-weight: 600;
+    color: #fff;
+  }
+  .step:not(.current):not(.done) .step-label{ color: #A9BCD4; }
+  .step-desc{
+    font-size: 12.5px;
+    color: #93AAC7;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+  .step.current .step-desc{ color: #C7D7EA; }
+
+  .rail-foot{ font-size: 12.5px; color: #90A7C4; line-height: 1.6; }
+  .rail-foot a{ color: #DCE8F5; text-decoration: underline; text-underline-offset: 2px; }
+
+  /* ---------- Main ---------- */
+  .main{
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    padding: 64px 32px 80px;
+    overflow-x: auto;
+  }
+  .mobile-progress{ display:none; }
+
+  .panel{
+    width: 100%;
+    max-width: 480px;
+  }
+  .eyebrow-row{
+    display:flex; align-items:center; gap:8px;
+    font-size: 13px; color: var(--ink-faint); font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .back-link{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size: 13.5px; font-weight: 600; color: var(--ink-soft);
+    text-decoration:none; cursor:pointer;
+    margin-bottom: 22px;
+  }
+  .back-link:hover{ color: var(--ink); }
+  .panel h1{
+    font-size: 27px;
+    font-weight: 700;
+    color: var(--ink);
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  .panel p.lede{
+    font-size: 15px;
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 0 0 36px;
+  }
+
+  .field{ margin-bottom: 20px; }
+  .field label{
+    display:block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 7px;
+  }
+  .field .hint{
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    margin-top: 6px;
+  }
+  .field .error{
+    font-size: 12.5px;
+    color: var(--danger);
+    margin-top: 6px;
+    display:none;
+  }
+  .field.invalid .error{ display:block; }
+  .field.invalid input, .field.invalid select{ border-color: var(--danger); }
+
+  input[type=text], input[type=email], input[type=tel], input[type=password], select{
+    width: 100%;
+    padding: 11px 13px;
+    font-size: 14.5px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--paper);
+    border: 1.5px solid var(--border-strong);
+    border-radius: var(--radius-s);
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  select{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'><path fill='%235B6472' d='M5.5 7.5l4.5 4.5 4.5-4.5' stroke='%235B6472' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 34px;
+  }
+  input::placeholder{ color: var(--ink-faint); }
+  input:focus, select:focus{
+    border-color: var(--focus);
+    box-shadow: 0 0 0 3.5px color-mix(in srgb, var(--focus) 22%, transparent);
+  }
+  .two-col{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .pw-wrap{ position:relative; }
+  .pw-toggle{
+    position:absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background:none; border:none; cursor:pointer;
+    font-size: 12px; font-weight: 600; color: var(--navy);
+    padding: 4px 6px;
+  }
+
+  .pw-meter{ display:flex; gap:4px; margin-top:8px; }
+  .pw-meter i{ flex:1; height:3px; border-radius:2px; background: var(--border); }
+  .pw-meter.w1 i:nth-child(1){ background: var(--danger); }
+  .pw-meter.w2 i:nth-child(1), .pw-meter.w2 i:nth-child(2){ background:#D68A2C; }
+  .pw-meter.w3 i:nth-child(1), .pw-meter.w3 i:nth-child(2), .pw-meter.w3 i:nth-child(3){ background: var(--success); }
+  .pw-meter.w4 i{ background: var(--success); }
+
+  .actions{
+    display:flex; align-items:center; justify-content: space-between;
+    margin-top: 36px;
+  }
+  .btn{
+    font-size: 14.5px; font-weight: 600;
+    padding: 11.5px 22px;
+    border-radius: var(--radius-s);
+    border: none;
+    cursor: pointer;
+    transition: background .15s ease, opacity .15s ease, transform .05s ease;
+    font-family: inherit;
+  }
+  .btn:active{ transform: translateY(1px); }
+  .btn-primary{
+    background: var(--navy);
+    color: #fff;
+  }
+  .btn-primary:hover{ background: var(--navy-700); }
+  .btn-primary:disabled{ opacity: .45; cursor: not-allowed; }
+  .btn-ghost{
+    background: transparent;
+    color: var(--ink-soft);
+    padding: 11.5px 8px;
+  }
+  .btn-ghost:hover{ color: var(--ink); }
+  .btn-text{
+    background:none; border:none; cursor:pointer;
+    color: var(--navy); font-weight: 600; font-size: 13.5px;
+    padding: 0; font-family: inherit;
+  }
+  .btn-text:disabled{ color: var(--ink-faint); cursor:not-allowed; }
+
+  /* Verify step */
+  .code-row{ display:flex; gap: 10px; margin-bottom: 6px; }
+  .code-row input{
+    width: 48px; height: 56px;
+    text-align:center;
+    font-size: 22px; font-weight: 700;
+    padding: 0;
+  }
+  .resend-row{
+    font-size: 13.5px; color: var(--ink-soft);
+    margin-top: 18px;
+  }
+  .verify-target{
+    background: var(--navy-tint);
+    border-radius: var(--radius-s);
+    padding: 12px 14px;
+    font-size: 13.5px;
+    color: var(--ink);
+    margin-bottom: 28px;
+    display:flex; align-items:center; justify-content:space-between; gap: 10px;
+  }
+  .verify-target strong{ font-weight: 600; }
+  .verify-target button{ flex:none; }
+
+  /* Chips (classes) */
+  .chip-input-row{ display:flex; gap: 10px; }
+  .chip-input-row input{ flex:1; }
+  .chip-input-row .btn{ flex:none; padding: 11.5px 18px; }
+  .chips{ display:flex; flex-wrap:wrap; gap: 8px; margin-top: 14px; }
+  .chip{
+    display:flex; align-items:center; gap: 8px;
+    background: var(--navy-tint);
+    color: var(--navy);
+    border: 1px solid var(--navy-tint-2);
+    border-radius: 999px;
+    padding: 7px 8px 7px 14px;
+    font-size: 13px; font-weight: 600;
+  }
+  .chip button{
+    width: 18px; height: 18px;
+    border-radius:50%;
+    border:none; background: rgba(11,55,102,0.12);
+    color: inherit; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12px; line-height:1; padding:0;
+  }
+  .chip-empty{ font-size: 13px; color: var(--ink-faint); margin-top: 6px; }
+
+  /* Welcome gate */
+  .option-card{
+    display:flex; align-items:flex-start; gap: 16px;
+    width:100%;
+    text-align:left;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-m);
+    background: var(--paper);
+    padding: 20px 20px;
+    margin-bottom: 14px;
+    cursor:pointer;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .05s ease;
+  }
+  .option-card:hover{
+    border-color: var(--navy);
+    box-shadow: 0 4px 18px rgba(11,55,102,0.08);
+  }
+  .option-card:active{ transform: translateY(1px); }
+  .option-icon{
+    flex:none;
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: var(--navy-tint);
+    color: var(--navy);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .option-body{ flex:1; }
+  .option-title{ font-size: 15px; font-weight: 700; color: var(--ink); margin: 2px 0 4px; }
+  .option-desc{ font-size: 13px; color: var(--ink-soft); line-height: 1.5; margin: 0; }
+  .option-arrow{ flex:none; color: var(--ink-faint); margin-top: 8px; transition: transform .15s ease, color .15s ease; }
+  .option-card:hover .option-arrow{ transform: translateX(3px); color: var(--navy); }
+
+  .divider-row{
+    display:flex; align-items:center; gap: 14px;
+    margin: 30px 0 22px;
+    color: var(--ink-faint);
+    font-size: 12.5px;
+  }
+  .divider-row::before, .divider-row::after{
+    content:""; flex:1; height:1px; background: var(--border);
+  }
+
+  .signin-alt{
+    text-align:center; font-size: 13.5px; color: var(--ink-soft);
+  }
+  .forgot-link{
+    float:right; font-size: 12.5px; font-weight: 600; color: var(--navy); text-decoration:none;
+  }
+
+  .success-panel{ text-align:left; }
+  .success-badge{
+    width: 52px; height:52px; border-radius:50%;
+    background: var(--success-tint);
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom: 22px;
+  }
+  .signout-link{ font-size: 13px; color: var(--ink-faint); text-decoration:none; margin-left: 16px; }
+  .signout-link:hover{ color: var(--ink-soft); }
+
+  /* Review */
+  .review-card{
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: 22px 22px 6px;
+    margin-bottom: 18px;
+    background: var(--paper);
+  }
+  .review-card-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom: 14px;
+  }
+  .review-card-head h3{
+    font-size: 14px; font-weight: 700; margin:0;
+    color: var(--ink);
+    text-transform: none;
+  }
+  .review-row{
+    display:flex; justify-content:space-between; gap: 16px;
+    padding: 11px 0;
+    border-top: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+  .review-row:first-of-type{ border-top: none; }
+  .review-row dt{ color: var(--ink-faint); margin:0; flex: none; width: 40%; }
+  .review-row dd{ color: var(--ink); margin:0; text-align:right; flex:1; font-weight: 500; }
+  .review-row dd.chips-inline{ display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end; }
+  .review-row dd.chips-inline span{
+    background: var(--navy-tint); color: var(--navy); border-radius: 999px;
+    padding: 3px 10px; font-size: 12px; font-weight:600;
+  }
+
+  .confirm-note{
+    display:flex; gap:10px; align-items:flex-start;
+    background: var(--paper-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-s);
+    padding: 13px 14px;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  /* Done screen */
+  .done-wrap{ text-align:left; }
+  .done-badge{
+    width: 52px; height:52px; border-radius:50%;
+    background: var(--success-tint);
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom: 22px;
+  }
+  .workspace-card{
+    border: 1px solid var(--border);
+    border-radius: var(--radius-m);
+    padding: 20px;
+    margin: 26px 0 30px;
+    background: var(--paper);
+  }
+  .workspace-card .ws-name{ font-size: 16px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .workspace-card .ws-url{ font-size: 13px; color: var(--navy); font-family: monospace; word-break: break-all; }
+  .ws-meta{ display:flex; gap: 22px; margin-top: 16px; padding-top:16px; border-top: 1px solid var(--border); }
+  .ws-meta div{ font-size: 12px; color: var(--ink-faint); }
+  .ws-meta strong{ display:block; font-size: 13.5px; color: var(--ink); font-weight: 600; margin-top: 2px; }
+
+  .toast{
+    position: fixed; bottom: 26px; left: 50%; transform: translateX(-50%) translateY(12px);
+    background: var(--ink); color: var(--paper);
+    padding: 12px 20px; border-radius: var(--radius-s);
+    font-size: 13.5px; font-weight: 500;
+    opacity: 0; pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+    z-index: 20;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  }
+  .toast.show{ opacity:1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 860px){
+    .app{ grid-template-columns: 1fr; }
+    .rail{ position: static; height:auto; padding: 26px 22px; flex-direction: row; align-items:center; justify-content:space-between; }
+    .rail-top{ flex-direction: row; align-items:center; gap:0; }
+    .hero{ display:none; }
+    .stepper{ display:none; }
+    .rail-foot{ display:none; }
+    .rail-bg{ display:none; }
+    .main{ padding: 34px 20px 60px; }
+    .mobile-progress{
+      display:flex; gap:6px; width:100%; max-width:480px; margin-bottom: 30px;
+    }
+    .mobile-progress i{ flex:1; height:4px; border-radius:3px; background: var(--border); }
+    .mobile-progress i.done, .mobile-progress i.current{ background: var(--navy); }
+    .two-col{ grid-template-columns: 1fr; }
+    .code-row input{ width: 100%; max-width: 52px; }
+  }
+
+  :focus-visible{ outline: 2px solid var(--focus); outline-offset: 2px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ transition: none !important; animation: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="splash" id="splash" aria-hidden="true">
+  <div class="splash-mark">
+    <div class="splash-ring"></div>
+    <img src="__IMG__" alt="">
+  </div>
+  <div class="splash-word">Autolyn <span>Academia</span></div>
+  <div class="splash-bar"><i id="splashBarFill"></i></div>
+  <div class="splash-status" id="splashStatus">Preparing your onboarding</div>
+</div>
+
+<div class="app" id="app">
+  <aside class="rail">
+    <div class="rail-bg" aria-hidden="true"><div class="rail-mark"><img src="__IMG__" alt=""></div></div>
+    <div class="rail-top">
+      <div class="brand">
+        <img src="__IMG__" alt="">
+        <div class="brand-text">
+          <span class="brand-word">Autolyn</span>
+          <span class="brand-sub">Academia</span>
+        </div>
+      </div>
+      <div class="hero">
+        <h2 class="hero-head">Your classroom,<br>properly organised.</h2>
+        <p class="hero-copy">Set up your teaching workspace once. Manage students, assessments and academic records from one place.</p>
+      </div>
+      <nav class="stepper" id="stepper" aria-label="Onboarding progress"></nav>
+    </div>
+    <p class="rail-foot">Setting up on behalf of a school?<br><a href="#" id="schoolLink">Start a school workspace instead →</a></p>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-progress" id="mobileProgress"></div>
+    <div class="panel" id="panel"></div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var STEPS = [
+    { key:"account", label:"Create account", desc:"Your name, email and password" },
+    { key:"verify", label:"Verify email", desc:"Confirm it's really you" },
+    { key:"profile", label:"Teaching profile", desc:"Level, subject and classes" },
+    { key:"review", label:"Review details", desc:"Check everything looks right" },
+    { key:"done", label:"Workspace ready", desc:"Start teaching on Autolyn" }
+  ];
+
+  var LEVELS = ["Kindergarten","Primary School","Middle School","High School","Higher Education","Other"];
+  var SUBJECTS = ["Mathematics","English / Language Arts","Science","Social Studies","Languages","Computer Science","Arts & Music","Physical Education","Other"];
+
+  var state = {
+    screen: "welcome",
+    step: 0,
+    account: { name:"", email:"", phone:"", password:"" },
+    verified: false,
+    profile: { level:"", subject:"", subjectOther:"", classes:[] },
+    resendCooldown: 0,
+    signin: { email:"", password:"" }
+  };
+
+  function loadDraft(){
+    try{
+      var raw = window.localStorage.getItem("autolyn_onboarding_draft");
+      if(raw){
+        var saved = JSON.parse(raw);
+        if(saved && typeof saved === "object"){
+          state.account = saved.account || state.account;
+          state.profile = saved.profile || state.profile;
+          state.verified = !!saved.verified;
+          if(typeof saved.step === "number" && saved.step <= 3) state.step = saved.step;
+          // Resume mid-signup only if there's real progress; otherwise start at the welcome gate.
+          if(saved.account && (saved.account.name || saved.step > 0)){
+            state.screen = "wizard";
+          }
+        }
+      }
+    }catch(e){ /* storage unavailable — continue with defaults */ }
+  }
+  function saveDraft(){
+    try{
+      window.localStorage.setItem("autolyn_onboarding_draft", JSON.stringify({
+        step: state.step, account: state.account, profile: state.profile, verified: state.verified
+      }));
+    }catch(e){ /* ignore */ }
+  }
+  function clearDraft(){
+    try{ window.localStorage.removeItem("autolyn_onboarding_draft"); }catch(e){}
+  }
+
+  function runSplash(){
+    var splash = document.getElementById("splash");
+    var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(reduced){
+      splash.classList.add("hide");
+      return;
+    }
+    var fill = document.getElementById("splashBarFill");
+    var status = document.getElementById("splashStatus");
+    requestAnimationFrame(function(){
+      fill.style.width = "100%";
+    });
+    setTimeout(function(){
+      status.textContent = "Ready";
+    }, 950);
+    setTimeout(function(){
+      splash.classList.add("hide");
+    }, 1300);
+  }
+
+  var panel = document.getElementById("panel");
+  var stepperEl = document.getElementById("stepper");
+  var mobileProgress = document.getElementById("mobileProgress");
+  var toastEl = document.getElementById("toast");
+  var toastTimer = null;
+
+  function showToast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove("show"); }, 2600);
+  }
+
+  function esc(s){
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){
+      return ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c];
+    });
+  }
+
+  function renderStepper(){
+    if(state.screen !== "wizard"){
+      stepperEl.innerHTML = "";
+      stepperEl.style.display = "none";
+      mobileProgress.innerHTML = "";
+      mobileProgress.style.display = "none";
+      return;
+    }
+    stepperEl.style.display = "";
+    mobileProgress.style.display = "";
+    stepperEl.innerHTML = STEPS.map(function(s, i){
+      var cls = i === state.step ? "current" : (i < state.step ? "done" : "upcoming");
+      var marker = i < state.step
+        ? '<svg width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5L4.5 8.5L12 1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+        : (i + 1);
+      return '<div class="step ' + cls + '"><div class="step-line"></div><div class="step-marker">' + marker + '</div>' +
+        '<div class="step-body"><div class="step-label">' + esc(s.label) + '</div><div class="step-desc">' + esc(s.desc) + '</div></div></div>';
+    }).join("");
+
+    mobileProgress.innerHTML = STEPS.map(function(s, i){
+      var cls = i === state.step ? "current" : (i < state.step ? "done" : "");
+      return '<i class="' + cls + '"></i>';
+    }).join("");
+  }
+
+  function goToScreen(screenName){
+    state.screen = screenName;
+    if(screenName === "welcome"){ clearDraft(); }
+    render();
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function goTo(stepIndex){
+    state.screen = "wizard";
+    state.step = stepIndex;
+    saveDraft();
+    render();
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  // ---------- Step renderers ----------
+
+  function renderWelcome(){
+    panel.innerHTML =
+      '<h1>Welcome to Autolyn Academia</h1>' +
+      '<p class="lede">Tell us where you\'re starting from and we\'ll take you to the right place.</p>' +
+      '<button type="button" class="option-card" id="goNew">' +
+        '<span class="option-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M10 4v12M4 10h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>' +
+        '<span class="option-body"><span class="option-title">I\'m new here</span>' +
+        '<p class="option-desc">Create your teacher account and set up your personal workspace. Takes about five minutes.</p></span>' +
+        '<span class="option-arrow"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+      '</button>' +
+      '<button type="button" class="option-card" id="goSignin">' +
+        '<span class="option-icon"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><path d="M13 3h2.5A1.5 1.5 0 0117 4.5v11a1.5 1.5 0 01-1.5 1.5H13M9 14l4-4-4-4M13 10H3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+        '<span class="option-body"><span class="option-title">I already have an account</span>' +
+        '<p class="option-desc">Sign in to pick up right where you left off.</p></span>' +
+        '<span class="option-arrow"><svg width="16" height="16" viewBox="0 0 20 20" fill="none"><path d="M7 4l6 6-6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' +
+      '</button>';
+
+    document.getElementById("goNew").addEventListener("click", function(){ goTo(0); });
+    document.getElementById("goSignin").addEventListener("click", function(){ goToScreen("signin"); });
+  }
+
+  function renderSignin(){
+    var s = state.signin;
+    panel.innerHTML =
+      '<a class="back-link" id="backWelcome"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>' +
+      '<h1>Welcome back</h1>' +
+      '<p class="lede">Sign in to continue to your Autolyn Academia workspace.</p>' +
+      '<div class="field" id="f-si-email"><label for="in-si-email">Email address</label>' +
+        '<input type="email" id="in-si-email" placeholder="you@school.edu" value="' + esc(s.email) + '">' +
+        '<div class="error">Enter a valid email address.</div></div>' +
+      '<div class="field" id="f-si-pass"><label for="in-si-pass">Password<a class="forgot-link" id="forgotLink" href="#">Forgot password?</a></label>' +
+        '<div class="pw-wrap"><input type="password" id="in-si-pass" placeholder="Enter your password" value="' + esc(s.password) + '">' +
+        '<button type="button" class="pw-toggle" id="siPwToggle">Show</button></div>' +
+        '<div class="error">Enter your password.</div></div>' +
+      '<div class="actions"><span></span><button class="btn btn-primary" id="doSignin">Sign in</button></div>' +
+      '<div class="divider-row">or</div>' +
+      '<p class="signin-alt">New to Autolyn Academia? <button type="button" class="btn-text" id="goCreate">Create an account</button></p>';
+
+    document.getElementById("backWelcome").addEventListener("click", function(){ goToScreen("welcome"); });
+    document.getElementById("goCreate").addEventListener("click", function(){ goTo(0); });
+    document.getElementById("forgotLink").addEventListener("click", function(e){
+      e.preventDefault();
+      showToast("Password reset isn't part of this preview yet.");
+    });
+
+    var passInput = document.getElementById("in-si-pass");
+    document.getElementById("siPwToggle").addEventListener("click", function(){
+      var showing = passInput.type === "text";
+      passInput.type = showing ? "password" : "text";
+      this.textContent = showing ? "Show" : "Hide";
+    });
+
+    document.getElementById("doSignin").addEventListener("click", function(){
+      var email = document.getElementById("in-si-email").value.trim();
+      var pass = document.getElementById("in-si-pass").value;
+      var ok = true;
+      toggleInvalid("f-si-email", !validEmail(email));
+      toggleInvalid("f-si-pass", !pass);
+      if(!validEmail(email) || !pass) ok = false;
+      if(!ok) return;
+
+      state.signin = { email: email, password: pass };
+      var btn = this;
+      btn.disabled = true;
+      btn.textContent = "Signing in…";
+      setTimeout(function(){
+        goToScreen("signin-success");
+      }, 700);
+    });
+  }
+
+  function renderSigninSuccess(){
+    var email = state.signin.email || "";
+    var name = email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); }) || "there";
+    panel.innerHTML =
+      '<div class="success-panel">' +
+      '<div class="success-badge"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 7" stroke="var(--success)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+      '<h1>Welcome back, ' + esc(name) + '</h1>' +
+      '<p class="lede">You\'re signed in. Your workspace is right where you left it.</p>' +
+      '<div class="actions" style="justify-content:flex-start; gap:6px;">' +
+        '<button class="btn btn-primary" id="toWorkspace">Go to your workspace</button>' +
+        '<a class="signout-link" id="signOut" href="#">Not you? Sign out</a>' +
+      '</div>' +
+      '</div>';
+
+    document.getElementById("toWorkspace").addEventListener("click", function(){
+      showToast("This is a preview — your live workspace opens here in a future release.");
+    });
+    document.getElementById("signOut").addEventListener("click", function(e){
+      e.preventDefault();
+      state.signin = { email:"", password:"" };
+      goToScreen("welcome");
+    });
+  }
+
+  function renderAccount(){
+    var a = state.account;
+    panel.innerHTML =
+      '<a class="back-link" id="backWelcome"><svg width="14" height="14" viewBox="0 0 20 20" fill="none"><path d="M12.5 4L6.5 10l6 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Back</a>' +
+      '<h1>Let\'s set up your account</h1>' +
+      '<p class="lede">Start with a few details about you. These will be used on your teacher profile and academic records.</p>' +
+      '<div class="field" id="f-name"><label for="in-name">Full name</label>' +
+        '<input type="text" id="in-name" placeholder="e.g. Ama Owusu" value="' + esc(a.name) + '">' +
+        '<div class="error">Enter your full name.</div></div>' +
+      '<div class="field" id="f-email"><label for="in-email">Email address</label>' +
+        '<input type="email" id="in-email" placeholder="you@school.edu" value="' + esc(a.email) + '">' +
+        '<div class="error">Enter a valid email address.</div></div>' +
+      '<div class="field" id="f-phone"><label for="in-phone">Phone number <span style="color:var(--ink-faint);font-weight:400;">(optional)</span></label>' +
+        '<input type="tel" id="in-phone" placeholder="+233 20 000 0000" value="' + esc(a.phone) + '"></div>' +
+      '<div class="field" id="f-pass"><label for="in-pass">Password</label>' +
+        '<div class="pw-wrap"><input type="password" id="in-pass" placeholder="At least 8 characters" value="' + esc(a.password) + '">' +
+        '<button type="button" class="pw-toggle" id="pwToggle">Show</button></div>' +
+        '<div class="pw-meter" id="pwMeter"><i></i><i></i><i></i><i></i></div>' +
+        '<div class="error">Use at least 8 characters.</div></div>' +
+      '<div class="actions"><span></span><button class="btn btn-primary" id="next">Continue</button></div>';
+
+    document.getElementById("backWelcome").addEventListener("click", function(){ goToScreen("welcome"); });
+
+    var passInput = document.getElementById("in-pass");
+    var pwToggle = document.getElementById("pwToggle");
+    pwToggle.addEventListener("click", function(){
+      var showing = passInput.type === "text";
+      passInput.type = showing ? "password" : "text";
+      pwToggle.textContent = showing ? "Show" : "Hide";
+    });
+    function updateMeter(){
+      var v = passInput.value;
+      var score = 0;
+      if(v.length >= 8) score++;
+      if(/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+      if(/[0-9]/.test(v)) score++;
+      if(/[^A-Za-z0-9]/.test(v)) score++;
+      var meter = document.getElementById("pwMeter");
+      meter.className = "pw-meter" + (v ? " w" + Math.max(1, score) : "");
+    }
+    passInput.addEventListener("input", updateMeter);
+    updateMeter();
+
+    document.getElementById("next").addEventListener("click", function(){
+      var name = document.getElementById("in-name").value.trim();
+      var email = document.getElementById("in-email").value.trim();
+      var phone = document.getElementById("in-phone").value.trim();
+      var pass = document.getElementById("in-pass").value;
+
+      var ok = true;
+      toggleInvalid("f-name", !name);
+      toggleInvalid("f-email", !validEmail(email));
+      toggleInvalid("f-pass", pass.length < 8);
+      if(!name || !validEmail(email) || pass.length < 8) ok = false;
+
+      if(!ok) return;
+
+      state.account = { name: name, email: email, phone: phone, password: pass };
+      state.verified = false;
+      goTo(1);
+    });
+  }
+
+  function toggleInvalid(id, invalid){
+    var el = document.getElementById(id);
+    if(el) el.classList.toggle("invalid", !!invalid);
+  }
+
+  function renderVerify(){
+    var email = state.account.email || "your email";
+    panel.innerHTML =
+      '<h1>Verify your email</h1>' +
+      '<p class="lede">Enter the 6-digit code we sent to confirm this address is yours.</p>' +
+      '<div class="verify-target"><span>Code sent to <strong>' + esc(email) + '</strong></span>' +
+        '<button class="btn-text" id="editEmail">Edit</button></div>' +
+      '<div class="field" id="f-code"><label>Verification code</label>' +
+        '<div class="code-row" id="codeRow">' +
+          [0,1,2,3,4,5].map(function(i){ return '<input maxlength="1" inputmode="numeric" pattern="[0-9]*" data-i="' + i + '">'; }).join("") +
+        '</div>' +
+        '<div class="error" style="display:block; visibility:hidden;" id="codeErr">That code doesn\'t look right. Try again.</div></div>' +
+      '<div class="resend-row" id="resendRow">Didn\'t get it? <button class="btn-text" id="resendBtn">Resend code</button></div>' +
+      '<div class="actions"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="next" disabled>Verify &amp; continue</button></div>';
+
+    document.getElementById("editEmail").addEventListener("click", function(){ goTo(0); });
+    document.getElementById("back").addEventListener("click", function(){ goTo(0); });
+
+    var inputs = Array.prototype.slice.call(document.querySelectorAll("#codeRow input"));
+    var nextBtn = document.getElementById("next");
+    function currentCode(){ return inputs.map(function(i){ return i.value; }).join(""); }
+    function refreshBtn(){ nextBtn.disabled = currentCode().length !== 6; }
+    inputs.forEach(function(inp, idx){
+      inp.addEventListener("input", function(){
+        inp.value = inp.value.replace(/[^0-9]/g, "").slice(0,1);
+        document.getElementById("codeErr").style.visibility = "hidden";
+        if(inp.value && idx < inputs.length - 1){ inputs[idx+1].focus(); }
+        refreshBtn();
+      });
+      inp.addEventListener("keydown", function(e){
+        if(e.key === "Backspace" && !inp.value && idx > 0){ inputs[idx-1].focus(); }
+      });
+      inp.addEventListener("paste", function(e){
+        e.preventDefault();
+        var text = (e.clipboardData || window.clipboardData).getData("text").replace(/[^0-9]/g, "");
+        text.slice(0,6).split("").forEach(function(ch, i){ if(inputs[i]) inputs[i].value = ch; });
+        var last = Math.min(text.length, 6) - 1;
+        if(inputs[last]) inputs[last].focus();
+        refreshBtn();
+      });
+    });
+    inputs[0].focus();
+
+    var cooldown = state.resendCooldown;
+    var resendBtn = document.getElementById("resendBtn");
+    var resendRow = document.getElementById("resendRow");
+    var timer = null;
+    function tickCooldown(){
+      if(cooldown > 0){
+        resendBtn.disabled = true;
+        resendRow.firstChild.textContent = "Didn't get it? Resend available in " + cooldown + "s — ";
+        cooldown--;
+        timer = setTimeout(tickCooldown, 1000);
+      } else {
+        resendBtn.disabled = false;
+        resendRow.firstChild.textContent = "Didn't get it? ";
+      }
+    }
+    tickCooldown();
+    resendBtn.addEventListener("click", function(){
+      if(resendBtn.disabled) return;
+      showToast("New code sent to " + email);
+      state.resendCooldown = 30;
+      cooldown = 30;
+      tickCooldown();
+    });
+
+    nextBtn.addEventListener("click", function(){
+      nextBtn.disabled = true;
+      nextBtn.textContent = "Verifying…";
+      setTimeout(function(){
+        state.verified = true;
+        goTo(2);
+      }, 650);
+    });
+  }
+
+  function renderProfile(){
+    var p = state.profile;
+    panel.innerHTML =
+      '<h1>Your teaching profile</h1>' +
+      '<p class="lede">This tailors Autolyn Academia to what and who you teach. You can add more classes later.</p>' +
+      '<div class="field" id="f-level"><label for="in-level">Teaching level</label>' +
+        '<select id="in-level">' +
+          '<option value="" disabled ' + (p.level ? "" : "selected") + '>Select a level</option>' +
+          LEVELS.map(function(l){ return '<option value="' + esc(l) + '" ' + (p.level === l ? "selected" : "") + '>' + esc(l) + '</option>'; }).join("") +
+        '</select><div class="error">Select the level you teach.</div></div>' +
+      '<div class="field" id="f-subject"><label for="in-subject">Primary subject</label>' +
+        '<select id="in-subject">' +
+          '<option value="" disabled ' + (p.subject ? "" : "selected") + '>Select a subject</option>' +
+          SUBJECTS.map(function(s){ return '<option value="' + esc(s) + '" ' + (p.subject === s ? "selected" : "") + '>' + esc(s) + '</option>'; }).join("") +
+        '</select><div class="error">Select your primary subject.</div></div>' +
+      (p.subject === "Other" ?
+        '<div class="field" id="f-subjectOther"><label for="in-subjectOther">Tell us the subject</label>' +
+        '<input type="text" id="in-subjectOther" placeholder="e.g. Design & Technology" value="' + esc(p.subjectOther) + '"></div>' : "") +
+      '<div class="field" id="f-classes"><label for="in-class">Classes you teach</label>' +
+        '<div class="chip-input-row"><input type="text" id="in-class" placeholder="e.g. Grade 7B"><button class="btn btn-primary" id="addClass" type="button">Add</button></div>' +
+        '<div class="chips" id="chipsWrap"></div>' +
+        '<div class="chip-empty" id="chipEmpty" style="display:none;">Add at least one class to continue.</div>' +
+      '</div>' +
+      '<div class="actions"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="next">Continue</button></div>';
+
+    document.getElementById("back").addEventListener("click", function(){ goTo(1); });
+
+    var levelSel = document.getElementById("in-level");
+    var subjectSel = document.getElementById("in-subject");
+    levelSel.addEventListener("change", function(){
+      p.level = levelSel.value;
+      toggleInvalid("f-level", false);
+    });
+    subjectSel.addEventListener("change", function(){
+      p.level = levelSel.value;
+      p.subject = subjectSel.value;
+      renderProfile();
+    });
+    var subjectOtherEl = document.getElementById("in-subjectOther");
+    if(subjectOtherEl){
+      subjectOtherEl.addEventListener("input", function(){ p.subjectOther = subjectOtherEl.value; });
+    }
+
+    function renderChips(){
+      var wrap = document.getElementById("chipsWrap");
+      wrap.innerHTML = p.classes.map(function(c, i){
+        return '<span class="chip">' + esc(c) + '<button type="button" data-i="' + i + '" aria-label="Remove ' + esc(c) + '">✕</button></span>';
+      }).join("");
+      Array.prototype.slice.call(wrap.querySelectorAll("button")).forEach(function(btn){
+        btn.addEventListener("click", function(){
+          p.classes.splice(parseInt(btn.getAttribute("data-i"), 10), 1);
+          renderChips();
+        });
+      });
+    }
+    renderChips();
+
+    function addClass(){
+      var inp = document.getElementById("in-class");
+      var v = inp.value.trim();
+      if(v && p.classes.indexOf(v) === -1){
+        p.classes.push(v);
+        inp.value = "";
+        renderChips();
+        toggleInvalid("f-classes", false);
+        document.getElementById("chipEmpty").style.display = "none";
+      }
+      inp.focus();
+    }
+    document.getElementById("addClass").addEventListener("click", addClass);
+    document.getElementById("in-class").addEventListener("keydown", function(e){
+      if(e.key === "Enter"){ e.preventDefault(); addClass(); }
+    });
+
+    document.getElementById("next").addEventListener("click", function(){
+      var level = levelSel.value;
+      var subject = subjectSel.value;
+      var subjectOther = document.getElementById("in-subjectOther") ? document.getElementById("in-subjectOther").value.trim() : p.subjectOther;
+
+      var ok = true;
+      toggleInvalid("f-level", !level);
+      toggleInvalid("f-subject", !subject);
+      if(!level || !subject) ok = false;
+      if(p.classes.length === 0){
+        document.getElementById("chipEmpty").style.display = "block";
+        ok = false;
+      }
+      if(!ok) return;
+
+      state.profile = { level: level, subject: subject, subjectOther: subjectOther, classes: p.classes };
+      goTo(3);
+    });
+  }
+
+  function renderReview(){
+    var a = state.account, p = state.profile;
+    var subjectDisplay = p.subject === "Other" && p.subjectOther ? p.subjectOther : p.subject;
+    panel.innerHTML =
+      '<h1>Review your details</h1>' +
+      '<p class="lede">Make sure everything looks right before we set up your workspace.</p>' +
+      '<div class="review-card">' +
+        '<div class="review-card-head"><h3>Personal details</h3><button class="btn-text" data-goto="0">Edit</button></div>' +
+        '<dl>' +
+          '<div class="review-row"><dt>Full name</dt><dd>' + esc(a.name) + '</dd></div>' +
+          '<div class="review-row"><dt>Email</dt><dd>' + esc(a.email) + '</dd></div>' +
+          '<div class="review-row"><dt>Phone</dt><dd>' + esc(a.phone || "—") + '</dd></div>' +
+        '</dl>' +
+      '</div>' +
+      '<div class="review-card">' +
+        '<div class="review-card-head"><h3>Teaching profile</h3><button class="btn-text" data-goto="2">Edit</button></div>' +
+        '<dl>' +
+          '<div class="review-row"><dt>Level</dt><dd>' + esc(p.level) + '</dd></div>' +
+          '<div class="review-row"><dt>Subject</dt><dd>' + esc(subjectDisplay) + '</dd></div>' +
+          '<div class="review-row"><dt>Classes</dt><dd class="chips-inline">' + p.classes.map(function(c){ return '<span>' + esc(c) + '</span>'; }).join("") + '</dd></div>' +
+        '</dl>' +
+      '</div>' +
+      '<div class="confirm-note">' +
+        '<svg width="16" height="16" viewBox="0 0 20 20" fill="none" style="flex:none;margin-top:1px;"><circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.4"/><path d="M10 9v4.2M10 6.8v.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>' +
+        '<span>Creating your workspace sets up your personal teaching space on Autolyn Academia. You can update these details anytime from Settings.</span>' +
+      '</div>' +
+      '<div class="actions"><button class="btn btn-ghost" id="back">Back</button><button class="btn btn-primary" id="next">Create my workspace</button></div>';
+
+    document.getElementById("back").addEventListener("click", function(){ goTo(2); });
+    Array.prototype.slice.call(panel.querySelectorAll("[data-goto]")).forEach(function(btn){
+      btn.addEventListener("click", function(){ goTo(parseInt(btn.getAttribute("data-goto"), 10)); });
+    });
+    document.getElementById("next").addEventListener("click", function(){
+      var btn = document.getElementById("next");
+      btn.disabled = true;
+      btn.textContent = "Setting up…";
+      setTimeout(function(){
+        state.step = 4;
+        clearDraft();
+        render();
+      }, 700);
+    });
+  }
+
+  function slugify(s){
+    return String(s || "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+  }
+
+  function renderDone(){
+    var a = state.account, p = state.profile;
+    var firstName = (a.name || "").trim().split(/\s+/)[0] || "Your";
+    var wsName = firstName + "'s Classroom";
+    var wsUrl = "academia.autolyn.com/t/" + (slugify(a.name) || "your-workspace");
+    panel.innerHTML =
+      '<div class="done-wrap">' +
+      '<div class="done-badge"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12.5L10 17.5L19 7" stroke="var(--success)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>' +
+      '<h1>Your workspace is ready</h1>' +
+      '<p class="lede">Welcome to Autolyn Academia, ' + esc(firstName) + '. Your personal teaching workspace has been created.</p>' +
+      '<div class="workspace-card">' +
+        '<div class="ws-name">' + esc(wsName) + '</div>' +
+        '<div class="ws-url">' + esc(wsUrl) + '</div>' +
+        '<div class="ws-meta">' +
+          '<div>Level<strong>' + esc(p.level) + '</strong></div>' +
+          '<div>Subject<strong>' + esc(p.subject === "Other" && p.subjectOther ? p.subjectOther : p.subject) + '</strong></div>' +
+          '<div>Classes<strong>' + p.classes.length + '</strong></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="actions" style="justify-content:flex-start; gap:14px;">' +
+        '<button class="btn btn-primary" id="enterWs">Enter your workspace</button>' +
+        '<button class="btn btn-ghost" id="startOver">Start over</button>' +
+      '</div>' +
+      '<p style="font-size:12.5px;color:var(--ink-faint);margin-top:28px;line-height:1.6;">This is the first version of onboarding, focused on getting individual teachers set up. Rosters, school-wide invites and integrations are coming in a later release.</p>' +
+      '</div>';
+
+    document.getElementById("enterWs").addEventListener("click", function(){
+      showToast("This is a preview — your live workspace opens here in a future release.");
+    });
+    document.getElementById("startOver").addEventListener("click", function(){
+      state = { screen:"welcome", step:0, account:{name:"",email:"",phone:"",password:""}, verified:false, profile:{level:"",subject:"",subjectOther:"",classes:[]}, resendCooldown:0, signin:{email:"",password:""} };
+      clearDraft();
+      render();
+    });
+  }
+
+  function render(){
+    renderStepper();
+    if(state.screen === "welcome") renderWelcome();
+    else if(state.screen === "signin") renderSignin();
+    else if(state.screen === "signin-success") renderSigninSuccess();
+    else if(state.step === 0) renderAccount();
+    else if(state.step === 1) renderVerify();
+    else if(state.step === 2) renderProfile();
+    else if(state.step === 3) renderReview();
+    else renderDone();
+  }
+
+  document.getElementById("schoolLink").addEventListener("click", function(e){
+    e.preventDefault();
+    showToast("School workspace setup is coming in a later release.");
+  });
+
+  loadDraft();
+  render();
+  runSplash();
+})();
+</script>
+</body>
+</html>
