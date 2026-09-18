@@ -1,0 +1,18 @@
+ACCOUNT CREATION
+- school
+- teacher
+
+As School
+Should be able to add teachers but ensure that one teacher cannot see the work of another teacher , so each teacher should have their own login tied to the created school?
+
+Teacher
+- subjects
+- Assesment Rules : Exam score , Attendance etc
+- Add students - student profile , name , ward number ,and all necessary information a teacher should have about his student
+- report card preview
+a public button which will then send all student reports to their respective parents
+(sms to parents )
+
+is there a way they can login obviously with internet connection but can be both online or offline when collecting data , which when come back online will den push to database , or they should just be online to prevent any complications ??
+
+ 	 
